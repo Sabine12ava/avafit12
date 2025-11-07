@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>AvaFit 12 – Dein 12‑Wochen Plan</title>
+  <meta name="theme-color" content="#1f3b2d">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    :root{
+      --bg:#0f1c16;
+      --bg-soft:#14261e;
+      --card:#1b3126;
+      --accent:#8fd3a8;
+      --accent-2:#55b083;
+      --text:#f2f7f3;
+      --muted:#a7c2b2;
+      --warn:#ffcc66;
+      --danger:#ff6b6b;
+      --ok:#9be89b;
+      --shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box;font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#0c1712);color:var(--text);}
+    header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#12251d,var(--bg));padding:14px 16px;border-bottom:1px solid #274536}
+    header h1{margin:0;font-size:18px;letter-spacing:.5px}
+    header small{display:block;color:var(--muted)}
+    .container{padding:16px;max-width:900px;margin:0 auto}
+    .grid{display:grid;gap:12px}
+    .card{background:linear-gradient(180deg,var(--card),#162a20);border:1px solid #2d4d3b;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+    h2{font-size:18px;margin:0 0 8px}
+    h3{font-size:16px;margin:0 0 6px;color:var(--accent)}
+    label{display:block;margin-bottom:8px}
+    input, select, textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #335845;background:#0e1b15;color:var(--text)}
+    button{padding:12px 14px;border:none;border-radius:12px;background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#082012;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #37634e;color:var(--accent)}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{display:inline-flex;gap:6px;align-items:center;border:1px solid #2e4d3c;border-radius:999px;padding:6px 10px;margin:4px 6px 0 0;color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted);}
+    .badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#102018;color:var(--muted);border:1px solid #2e4d3c}
+    .flex{display:flex;gap:12px;align-items:center}
+    .split{display:grid;gap:12px}
+    @media(min-width:760px){.split{grid-template-columns:1.1fr .9fr}}
+    .progress{height:10px;background:#0e1b15;border-radius:999px;overflow:hidden;border:1px solid #2c4b3a}
+    .progress > div{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));width:0%;transition:.4s}
+    nav{position:sticky;bottom:0;display:grid;grid-template-columns: repeat(4,1fr);gap:8px;padding:8px;background:linear-gradient(0deg,#0d1914,transparent)}
+    nav button{background:#173024;border:1px solid #2a4a39;color:var(--text)}
+    .hidden{display:none}
+    .list{display:grid;gap:8px}
+    .list-item{background:#0e1b15;border:1px dashed #2c4b3a;border-radius:10px;padding:10px}
+    .muted{color:var(--muted)}
+    .quote{padding:12px;border-left:3px solid var(--accent);background:#0c1914;border-radius:8px}
+    .check{accent-color:#55b083;transform:scale(1.2);margin-right:8px}
+    .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#102019;border:1px solid #2f4f3d;padding:10px 14px;border-radius:10px;color:var(--text);box-shadow:var(--shadow);display:none}
+    .kicker{color:var(--warn);font-weight:700}
+    footer{color:var(--muted);font-size:12px;text-align:center;padding:40px 16px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AVAfit 12 <small>Sanfter Start · 12 Wochen · Morgens 20–30 Min</small></h1>
+  </header>
+
+  <div class="container grid">
+
+    <section id="screen-dashboard" class="card">
+      <h2>Dashboard</h2>
+      <div class="split">
+        <div class="card">
+          <h3>Woche <span id="week-num"></span> · Fortschritt</h3>
+          <div class="progress" aria-label="Wöchentlicher Trainings-Fortschritt">
+            <div id="progress-bar"></div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <span class="badge">Ziel: 4–5 Trainings + Yoga</span>
+            <span class="badge" id="done-badge">0 erledigt</span>
+          </div>
+          <div class="quote" style="margin-top:12px">
+            <div class="kicker">Mantra</div>
+            <div id="mantra">Ich wähle Gesundheit. Ich wähle Freiheit. Ich wähle mich.</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Mein Warum</h3>
+          <p id="warum">Ich gehe diesen Weg, weil ich mich gesund, frei und lebendig fühlen möchte. Ich tue das aus Liebe zu mir selbst – weil mein Körper meine Aufmerksamkeit verdient. Ich mache das für mich – aus Selbstliebe, aus Freiheit und aus tiefem Respekt für meinen Weg.</p>
+          <button class="ghost" onclick="editWarum()">Bearbeiten</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-plan" class="card hidden">
+      <h2>Wochenplan: Training</h2>
+      <p class="muted">Montag abends Yoga (90 Min). Alle anderen Einheiten morgens (20–30 Min).</p>
+      <div class="list" id="plan-list"></div>
+      <div class="row" style="margin-top:8px">
+        <button onclick="resetWeek()">Woche zurücksetzen</button>
+        <button class="ghost" onclick="copyThisWeekToNext()">Diese Woche in nächste kopieren</button>
+      </div>
+    </section>
+
+    <section id="screen-meals" class="card hidden">
+      <h2>5‑Tage Thermomix Essensplan</h2>
+      <p class="muted">Vegetarisch, 80% basisch, Protein aus Bohnen, Nüssen/Saaten, veganem Vanille-Protein, bisschen Käse.</p>
+      <div id="meals" class="list"></div>
+      <div class="row" style="margin-top:8px">
+        <button onclick="addMeal()">Gericht hinzufügen</button>
+        <button class="ghost" onclick="exportMeals()">Als JSON exportieren</button>
+      </div>
+    </section>
+
+    <section id="screen-habits" class="card hidden">
+      <h2>Gewohnheiten & Check-ins</h2>
+      <div class="list" id="habits-list"></div>
+      <h3 style="margin-top:10px">Wöchentlicher Check‑in</h3>
+      <label>Notizen
+        <textarea id="checkin-notes" rows="4" placeholder="Wie ging es mir? Energie, Schlaf, Stimmung, Fortschritt …"></textarea>
+      </label>
+      <div class="row">
+        <label class="pill"><input type="checkbox" id="photo-check" class="check">Vorher/Nachher Foto gemacht</label>
+        <label class="pill"><input type="checkbox" id="measure-check" class="check">Maße/Umfang aktualisiert</label>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button onclick="saveCheckin()">Check‑in speichern</button>
+        <button class="ghost" onclick="clearCheckin()">Check‑in leeren</button>
+      </div>
+      <div id="checkin-log" class="list" style="margin-top:12px"></div>
+    </section>
+
+  </div>
+
+  <nav>
+    <button onclick="show('dashboard')">Dashboard</button>
+    <button onclick="show('plan')">Training</button>
+    <button onclick="show('meals')">Essen</button>
+    <button onclick="show('habits')">Gewohnheiten</button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // --- simple state ---
+    const LS_KEY = "avafit12-state-v1";
+    let STATE = JSON.parse(localStorage.getItem(LS_KEY) || "null") || getDefaultState();
+
+    function getDefaultState(){
+      const today = new Date();
+      const start = new Date(); // start now; user kann später ändern
+      const weeks = Array.from({length:12}).map((_,i)=>({index:i+1, workouts:[
+        {day:"Montag",    type:"Yoga", time:"Abends", done:false, note:"90 Min Yoga (Studio)"},
+        {day:"Dienstag",  type:"Kraft – Unterkörper + Core", time:"Morgens", done:false},
+        {day:"Mittwoch",  type:"Ausdauer – Rudergerät/Laufband (locker)", time:"Morgens", done:false},
+        {day:"Donnerstag",type:"Kraft – Oberkörper + Core", time:"Morgens", done:false},
+        {day:"Freitag",   type:"Ausdauer – Intervalle (20–25 Min)", time:"Morgens", done:false},
+        {day:"Wochenende",type:"Mobility/Walk optional", time:"Flex", done:false}
+      ], meals: getDefaultMeals(), habits: getDefaultHabits(), checkins: [] }));
+      return {
+        startISO: start.toISOString(),
+        mantra: "Ich wähle Gesundheit. Ich wähle Freiheit. Ich wähle mich.",
+        warum: "Ich gehe diesen Weg, weil ich mich gesund, frei und lebendig fühlen möchte. Ich tue das aus Liebe zu mir selbst – weil mein Körper meine Aufmerksamkeit verdient. Ich mache das für mich – aus Selbstliebe, aus Freiheit und aus tiefem Respekt für meinen Weg.",
+        currentWeek: 1,
+        weeks
+      };
+    }
+
+    function getDefaultMeals(){
+      // Five-day Thermomix plan placeholders (Cookidoo links field)
+      return [
+        {day:"Tag 1", breakfast:"Protein-Smoothie Vanille + Beeren (TM6)", lunch:"Bohnen-Gemüse-Bowl (TM6)", dinner:"Zucchini-Nudelpfanne mit Käse (TM6)", links:[]},
+        {day:"Tag 2", breakfast:"Hafer-Quark Ersatz: Hafer-„Skyr“ vegan + Nüsse (TM6)", lunch:"Lauchsuppe mit weißen Bohnen (TM6)", dinner:"Shakshuka mild (wenig Ei) (TM6)", links:[]},
+        {day:"Tag 3", breakfast:"Grüner Smoothie mild (TM6)", lunch:"Bunter Salat + Ofengemüse + Kichererbsen (TM6)", dinner:"Gemüsepfanne + Halloumi/Feta (flexibel) (TM6)", links:[]},
+        {day:"Tag 4", breakfast:"Chia-Pudding Vanille (TM6)", lunch:"Blumenkohl-Brokkoli-Cremesuppe (TM6)", dinner:"Bohnen-Pasta low-carb (Zoodles) (TM6)", links:[]},
+        {day:"Tag 5", breakfast:"Protein-Porridge light (Hafer + Vanilleprotein) (TM6)", lunch:"Tomaten-Paprika-Suppe (TM6)", dinner:"Pilzpfanne + Kräuter (TM6)", links:[]},
+      ];
+    }
+
+    function getDefaultHabits(){
+      return [
+        {label:"2 L Wasser", key:"water"},
+        {label:"10.000 Schritte (oder 30 Min LISS)", key:"steps"},
+        {label:"Protein erreicht (≥70g)", key:"protein"},
+        {label:"Dehnen / Mobility 5–10 Min", key:"mobility"},
+        {label:"Mantra gelesen", key:"mantra"}
+      ];
+    }
+
+    // --- UI helpers ---
+    function save(){ localStorage.setItem(LS_KEY, JSON.stringify(STATE)); }
+    function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',1600); }
+    function show(name){
+      for (const id of ['dashboard','plan','meals','habits']){
+        document.getElementById('screen-'+id).classList.toggle('hidden', id!==name);
+      }
+      if(name==='plan') renderPlan();
+      if(name==='meals') renderMeals();
+      if(name==='habits') renderHabits();
+      if(name==='dashboard') renderDashboard();
+    }
+
+    function renderDashboard(){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      const total = w.workouts.length;
+      const done = w.workouts.filter(x=>x.done).length;
+      document.getElementById('week-num').textContent = STATE.currentWeek;
+      document.getElementById('done-badge').textContent = done + " / " + total + " erledigt";
+      document.getElementById('progress-bar').style.width = (100*done/total) + "%";
+      document.getElementById('mantra').textContent = STATE.mantra;
+      document.getElementById('warum').textContent = STATE.warum;
+    }
+
+    function renderPlan(){
+      const host = document.getElementById('plan-list');
+      host.innerHTML = "";
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.workouts.forEach((wo, idx)=>{
+        const div = document.createElement('div');
+        div.className = "list-item";
+        div.innerHTML = `
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <div>
+              <strong>${wo.day}</strong><br>
+              <span class="muted">${wo.type} · ${wo.time}</span>
+            </div>
+            <div class="row">
+              <label class="pill"><input type="checkbox" class="check" ${wo.done?"checked":""} onchange="toggleDone(${idx})"> erledigt</label>
+              <button class="ghost" onclick="editWorkout(${idx})">Bearbeiten</button>
+            </div>
+          </div>
+        `;
+        host.appendChild(div);
+      });
+      const nav = document.createElement('div');
+      nav.className="row";
+      nav.style.marginTop="10px";
+      nav.innerHTML = `
+        <button class="ghost" onclick="prevWeek()">← Woche ${Math.max(1,STATE.currentWeek-1)}</button>
+        <span class="badge">Aktuell: Woche ${STATE.currentWeek}</span>
+        <button class="ghost" onclick="nextWeek()">Woche ${Math.min(12,STATE.currentWeek+1)} →</button>
+      `;
+      host.appendChild(nav);
+    }
+
+    function renderMeals(){
+      const host = document.getElementById('meals');
+      host.innerHTML = "";
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.meals.forEach((m, idx)=>{
+        const div = document.createElement('div');
+        div.className = "list-item";
+        div.innerHTML = `
+          <strong>${m.day}</strong>
+          <div class="row">
+            <div style="flex:1">
+              <label>Frühstück<input value="${m.breakfast||""}" onchange="updateMeal(${idx}, 'breakfast', this.value)"></label>
+              <label>Mittagessen<input value="${m.lunch||""}" onchange="updateMeal(${idx}, 'lunch', this.value)"></label>
+              <label>Abendessen<input value="${m.dinner||""}" onchange="updateMeal(${idx}, 'dinner', this.value)"></label>
+            </div>
+            <div style="min-width:220px">
+              <label>Cookidoo-Link (optional)<input placeholder="https://..." value="${(m.links&&m.links[0])||""}" onchange="updateMealLink(${idx}, this.value)"></label>
+              <button class="ghost" onclick="duplicateMeal(${idx})">Duplizieren</button>
+            </div>
+          </div>
+        `;
+        host.appendChild(div);
+      });
+    }
+
+    function renderHabits(){
+      const host = document.getElementById('habits-list');
+      host.innerHTML = "";
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.habits.forEach((h, idx)=>{
+        const id = "habit-"+h.key;
+        const saved = (w.habitState && w.habitState[h.key]) || false;
+        const div = document.createElement('label');
+        div.className="pill";
+        div.innerHTML = `<input id="${id}" class="check" type="checkbox" ${saved?"checked":""} onchange="toggleHabit('${h.key}')">${h.label}`;
+        host.appendChild(div);
+      });
+      // check-in area
+      const ci = (w.checkins && w.checkins[w.checkins.length-1]) || {};
+      document.getElementById('checkin-notes').value = ci.notes || "";
+      document.getElementById('photo-check').checked = ci.photo || false;
+      document.getElementById('measure-check').checked = ci.measure || false;
+      // log
+      const logHost = document.getElementById('checkin-log');
+      logHost.innerHTML = "";
+      (w.checkins||[]).slice().reverse().forEach(item=>{
+        const d = document.createElement('div');
+        d.className="list-item";
+        d.innerHTML = `<div class="mono">${new Date(item.ts).toLocaleString()}</div><div class="muted">${(item.notes||"").replace(/</g,"&lt;")}</div>`;
+        logHost.appendChild(d);
+      });
+    }
+
+    // --- actions ---
+    function toggleDone(idx){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.workouts[idx].done = !w.workouts[idx].done;
+      save(); renderDashboard(); renderPlan();
+    }
+    function editWorkout(idx){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      const item = w.workouts[idx];
+      const type = prompt("Trainingstyp bearbeiten:", item.type) || item.type;
+      const time = prompt("Tageszeit (Morgens/Abends/Flex):", item.time) || item.time;
+      w.workouts[idx] = {...item, type, time};
+      save(); renderPlan();
+    }
+    function prevWeek(){ if(STATE.currentWeek>1){STATE.currentWeek--; save(); show('plan');} }
+    function nextWeek(){ if(STATE.currentWeek<12){STATE.currentWeek++; save(); show('plan');} }
+    function resetWeek(){
+      if(confirm("Woche wirklich zurücksetzen?")){
+        const idx = STATE.currentWeek-1;
+        STATE.weeks[idx].workouts.forEach(w=>w.done=false);
+        save(); renderDashboard(); renderPlan(); toast("Woche zurückgesetzt");
+      }
+    }
+    function copyThisWeekToNext(){
+      if(STATE.currentWeek>=12){ toast("Letzte Woche erreicht"); return; }
+      const cur = STATE.weeks[STATE.currentWeek-1];
+      const nxt = STATE.weeks[STATE.currentWeek];
+      nxt.workouts = cur.workouts.map(w=>({...w, done:false}));
+      nxt.meals = cur.meals.map(m=>JSON.parse(JSON.stringify(m)));
+      nxt.habits = cur.habits.map(h=>({...h}));
+      save(); toast("In nächste Woche kopiert");
+    }
+
+    function updateMeal(i, key, val){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.meals[i][key] = val;
+      save();
+    }
+    function updateMealLink(i, url){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.meals[i].links = url ? [url] : [];
+      save();
+    }
+    function duplicateMeal(i){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.meals.push({...w.meals[i]});
+      save(); renderMeals();
+    }
+    function addMeal(){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.meals.push({day:"(zusätzlich)", breakfast:"", lunch:"", dinner:"", links:[]});
+      save(); renderMeals();
+    }
+
+    function toggleHabit(key){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      w.habitState = w.habitState || {};
+      w.habitState[key] = !w.habitState[key];
+      save();
+    }
+    function saveCheckin(){
+      const w = STATE.weeks[STATE.currentWeek-1];
+      const entry = {
+        ts: Date.now(),
+        notes: document.getElementById('checkin-notes').value.trim(),
+        photo: document.getElementById('photo-check').checked,
+        measure: document.getElementById('measure-check').checked
+      };
+      w.checkins = w.checkins || [];
+      w.checkins.push(entry);
+      save(); renderHabits(); toast("Check‑in gespeichert");
+    }
+    function clearCheckin(){
+      document.getElementById('checkin-notes').value = "";
+      document.getElementById('photo-check').checked = false;
+      document.getElementById('measure-check').checked = false;
+      toast("Check‑in geleert (nicht gespeichert)");
+    }
+    function editWarum(){
+      const text = prompt("Dein Warum:", STATE.warum);
+      if(text){ STATE.warum = text; save(); renderDashboard(); }
+    }
+
+    // Notifications (simple)
+    async function askNotification(){
+      if(!("Notification" in window)) return toast("Keine Benachrichtigungen verfügbar");
+      const p = await Notification.requestPermission();
+      if(p==="granted"){ new Notification("AVAfit 12", {body:"Erinnerung aktiviert – viel Spaß beim Training!"}); }
+    }
+
+    // Service Worker
+    if("serviceWorker" in navigator){
+      window.addEventListener("load", ()=>{
+        navigator.serviceWorker.register("./sw.js");
+      });
+    }
+
+    // init
+    show('dashboard');
+  </script>
+</body>
+<footer>
+  AVAfit 12 · Persönlicher 12‑Wochen Begleiter (offlinefähig) · © 2025
+</footer>
+</html>
